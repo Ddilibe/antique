@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.astro/
+
+# generated assets
+src/assets/generated/
+
+# test output
+test-results/
+playwright-report/
+coverage/
+
+# environment
+.env
+.env.*
+!.env.example
+
+# editor / os
+.DS_Store
+*.log
+.vscode/
+.idea/

@@ -1,0 +1,29 @@
+---
+import JournalArchive from '../../../components/JournalArchive.astro';
+import { getPublishedJournal } from '../../../lib/content';
+import { paginate } from '../../../lib/utils';
+import { PAGINATION } from '../../../consts';
+
+export async function getStaticPaths() {
+  const entries = await getPublishedJournal();
+  const totalPages = Math.max(1, Math.ceil(entries.length / PAGINATION.journal));
+
+  return Array.from({ length: Math.max(0, totalPages - 1) }, (_, index) => {
+    const page = index + 2;
+    return {
+      params: { page: String(page) },
+      props: { entries },
+    };
+  });
+}
+
+const { entries } = Astro.props;
+const currentPage = Number(Astro.params.page);
+const result = paginate(entries, currentPage, PAGINATION.journal);
+---
+
+<JournalArchive
+  entries={result.items}
+  currentPage={result.currentPage}
+  totalPages={result.totalPages}
+/>

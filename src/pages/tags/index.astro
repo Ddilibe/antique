@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllTags } from '../../lib/content';
+import { slugify } from '../../lib/utils';
+
+const tags = await getAllTags();
+const entries = [...tags.entries()];
+---
+
+<BaseLayout
+  title="Tags"
+  description="An index of subjects, themes, and recurring obsessions across the Antique journal and notes."
+>
+  <header class="page-head">
+    <div class="container container--narrow">
+      <p class="eyebrow">Index</p>
+      <h1 class="page-head__title">Tags</h1>
+      <p class="page-head__lede">
+        A map of what keeps coming up. Every essay and note is filed under one or more of these
+        small, imperfect categories.
+      </p>
+    </div>
+  </header>
+
+  <section class="section section--tight">
+    <div class="container">
+      <div class="tag-cloud">
+        {entries.map(([tag, count]) => (
+          <a class="tag-cloud__item" href={`/tags/${slugify(tag)}/`}>
+            {tag}
+            <span class="tag-cloud__count">{count}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

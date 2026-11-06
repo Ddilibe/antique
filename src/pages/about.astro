@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Newsletter from '../components/Newsletter.astro';
+import { SITE } from '../consts';
+---
+
+<BaseLayout
+  title="About"
+  description="About Antique, an independent journal and personal publication — its author, its intentions, and its colophon."
+>
+  <header class="page-head">
+    <div class="container container--narrow">
+      <p class="eyebrow">About the publication</p>
+      <h1 class="page-head__title">A small press of one.</h1>
+      <p class="page-head__lede">
+        Antique is written and edited by {SITE.author.name}. It exists to make room for a certain
+        kind of attention — unhurried, unoptimised, and mostly offline.
+      </p>
+    </div>
+  </header>
+
+  <section class="section section--tight">
+    <div class="container container--narrow">
+      <div class="about-grid">
+        <aside class="about-aside">
+          <div class="about-aside__portrait">
+            <img src="/logo.svg" alt="The Antique antler emblem" width="120" height="120" />
+          </div>
+          <p class="about-aside__caption">
+            The antler, drawn by hand.<br />
+            A mark for the half-said and the half-remembered.
+          </p>
+          <div class="site-footer__links">
+            <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+            <a href="/rss.xml">RSS feed</a>
+          </div>
+        </aside>
+
+        <div class="prose">
+          <p>
+            I started Antique because I wanted somewhere to put the long thoughts — the ones that
+            do not fit into a message, a thread, or a caption. It is a personal journal in the old
+            sense: a place to think in public, slowly, and to keep a record of the thinking.
+          </p>
+          <p>
+            The name is not about age or objects. It is about the quality of attention we give to
+            things that have been handled a great deal: words, memories, ordinary days. An antique
+            is valuable because someone kept it. This is a place for keeping.
+          </p>
+
+          <h2>What you will find</h2>
+          <p>
+            <strong>Essays</strong> are the centre of the publication: finished pieces, usually
+            between one and four thousand words, on attention, memory, technology, solitude, and the
+            textures of a working life.
+          </p>
+          <p>
+            <strong>Notes</strong> are the margins. Short observations, quotations, and fragments
+            that have not yet become anything else. They are published without polish, because
+            polish is often what kills them.
+          </p>
+
+          <h2>What this is not</h2>
+          <p>
+            There is no content calendar. There are no sponsors, growth targets, or engagement
+            metrics. Nothing here is generated in order to be consumed quickly, and nothing is
+            written to be agreed with. If a piece is wrong, it will be revised in public and the
+            revision dated.
+          </p>
+
+          <h2>Correspondence</h2>
+          <p>
+            Letters are welcome and read carefully. Write to
+            <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. I answer what I can, when I can.
+          </p>
+
+          <h2>Colophon</h2>
+          <p>
+            Set in <em>Cormorant Garamond</em> for display and body, <em>Inter</em> for interface
+            text, and <em>JetBrains Mono</em> for the small labels that keep things in order. Built
+            with Astro, hosted as static files, indexed by Pagefind. The paper is a colour, not a
+            texture. The antler was drawn with a single line and then corrected many times.
+          </p>
+          <p>
+            All writing is © {new Date().getFullYear()} {SITE.author.name}. Please quote with
+            attribution and a link; do not republish in full without asking.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <Newsletter
+        title="Letters, not broadcasts."
+        copy="If you would like the occasional essay in your inbox — and nothing else — leave an address below."
+      />
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,43 @@
+---
+import { NAV, SITE } from '../consts';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__grid">
+      <div class="site-footer__brand">
+        <a class="brand" href="/" aria-label={`${SITE.name} — home`}>
+          <img class="brand__mark" src="/logo.svg" alt="" width="32" height="32" />
+          <span class="brand__name">Ant<span>i</span>que</span>
+        </a>
+        <p>{SITE.tagline} An independent publication, written slowly and sent out into the quiet.</p>
+      </div>
+
+      <div>
+        <h2 class="site-footer__heading">Sections</h2>
+        <div class="site-footer__links">
+          {NAV.map((item) => (
+            <a href={item.href}>{item.label}</a>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h2 class="site-footer__heading">Elsewhere</h2>
+        <div class="site-footer__links">
+          <a href="/rss.xml">RSS feed</a>
+          <a href="/search">Search</a>
+          <a href={`mailto:${SITE.email}`}>Write to us</a>
+          <a href="/about">Colophon</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="site-footer__bottom">
+      <p>© {year} {SITE.name}. All words are mine.</p>
+      <p>Set in Cormorant Garamond, Inter &amp; JetBrains Mono.</p>
+    </div>
+  </div>
+</footer>

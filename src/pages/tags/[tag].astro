@@ -1,0 +1,87 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getAllTags, getJournalByTag, getNotesByTag } from '../../lib/content';
+import { formatDate, isoDate, slugify, titleCase } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const tags = await getAllTags();
+
+  return [...tags.keys()].map((tag) => ({
+    params: { tag: slugify(tag) },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+const [journal, notes] = await Promise.all([getJournalByTag(tag), getNotesByTag(tag)]);
+const renderedNotes = await Promise.all(
+  notes.map(async (note) => ({ note, ...(await render(note)) })),
+);
+const total = journal.length + notes.length;
+---
+
+<BaseLayout
+  title={`Tagged “${tag}”`}
+  description={`${total} pieces from Antique filed under ${tag}.`}
+>
+  <header class="page-head">
+    <div class="container container--narrow">
+      <p class="eyebrow">Filed under</p>
+      <h1 class="page-head__title">{titleCase(tag)}</h1>
+      <p class="page-head__lede">
+        {total === 1 ? 'One piece' : `${total} pieces`} across the journal and notes, tagged
+        <span class="nowrap">“{tag}”</span>.
+      </p>
+    </div>
+  </header>
+
+  {journal.length > 0 && (
+    <section class="section section--tight">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-head__title">Essays</h2>
+          <a class="section-head__link" href="/journal">All essays →</a>
+        </div>
+        <div class="post-grid">
+          {journal.map((entry) => <PostCard entry={entry} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {renderedNotes.length > 0 && (
+    <section class="section section--tight">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-head__title">Notes</h2>
+          <a class="section-head__link" href="/notes">All notes →</a>
+        </div>
+        <div class="note-list">
+          {renderedNotes.map(({ note, Content }) => (
+            <article class="note">
+              <time class="note__date" datetime={isoDate(note.data.date)}>
+                {formatDate(note.data.date, 'month-day')}
+              </time>
+              <div>
+                {note.data.title && (
+                  <h3 class="note__title">
+                    <a href={`/notes/${note.id}/`}>{note.data.title}</a>
+                  </h3>
+                )}
+                <div class="note__body"><Content /></div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section section--tight">
+    <div class="container">
+      <a class="button button--ghost" href="/tags">← All tags</a>
+    </div>
+  </section>
+</BaseLayout>

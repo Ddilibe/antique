@@ -1,0 +1,153 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import Newsletter from '../../components/Newsletter.astro';
+import {
+  entryReadingTime,
+  getPublishedJournal,
+  getRelatedJournal,
+  type JournalEntry,
+} from '../../lib/content';
+import { formatDate, isoDate, slugify, wordCount } from '../../lib/utils';
+import { SITE } from '../../consts';
+
+export async function getStaticPaths() {
+  const entries = await getPublishedJournal();
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry, entries },
+  }));
+}
+
+interface Props {
+  entry: JournalEntry;
+  entries: JournalEntry[];
+}
+
+const { entry, entries } = Astro.props;
+const { Content, headings } = await render(entry);
+const { title, description, date, updated, tags, issue, epigraph, epigraphAuthor } = entry.data;
+
+const minutes = entryReadingTime(entry);
+const words = wordCount(entry.body);
+const related = getRelatedJournal(entry, entries);
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  datePublished: date.toISOString(),
+  ...(updated && { dateModified: updated.toISOString() }),
+  author: {
+    '@type': 'Person',
+    name: SITE.author.name,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: SITE.name,
+  },
+  mainEntityOfPage: canonical.href,
+  url: canonical.href,
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  type="article"
+  publishedTime={date.toISOString()}
+  modifiedTime={updated?.toISOString()}
+  showProgress
+>
+  <article data-pagefind-body>
+    <header class="post-header">
+      <div class="container">
+        <a class="post-header__back" href="/journal">← The journal</a>
+        <div class="meta">
+          {issue && <span>Issue {issue}</span>}
+          {issue && <span class="meta__dot" aria-hidden="true"></span>}
+          <time datetime={isoDate(date)}>{formatDate(date)}</time>
+          <span class="meta__dot" aria-hidden="true"></span>
+          <span>{minutes} min read</span>
+          <span class="meta__dot" aria-hidden="true"></span>
+          <span>{words.toLocaleString('en-US')} words</span>
+        </div>
+        <h1 class="post-header__title">{title}</h1>
+        <p class="post-header__description">{description}</p>
+        {updated && (
+          <p class="meta" style="margin-top: 1rem;">
+            Revised <time datetime={isoDate(updated)}>{formatDate(updated)}</time>
+          </p>
+        )}
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="post-layout">
+        <div>
+          {epigraph && (
+            <blockquote class="featured__epigraph" style="margin-bottom: 2.5rem;">
+              <p>{epigraph}</p>
+              {epigraphAuthor && <cite>{epigraphAuthor}</cite>}
+            </blockquote>
+          )}
+
+          <div class="prose">
+            <Content />
+          </div>
+
+          <footer class="post-end" data-pagefind-ignore>
+            <p class="eyebrow">Filed under</p>
+            <div class="post-end__tags">
+              {tags.map((tag) => (
+                <a class="tag" href={`/tags/${slugify(tag)}/`}>{tag}</a>
+              ))}
+            </div>
+            <div class="post-end__foot">
+              <p class="post-end__sig">— {SITE.author.name}</p>
+              <a class="button button--ghost" href="/journal">More essays</a>
+            </div>
+          </footer>
+        </div>
+
+        <aside class="post-aside" data-pagefind-ignore>
+          <TableOfContents headings={headings} />
+          <div class="toc">
+            <h2 class="toc__title">Keep reading</h2>
+            <div class="site-footer__links">
+              <a href="/journal">All essays</a>
+              <a href="/notes">Notes</a>
+              <a href="/rss.xml">RSS</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+
+  {related.length > 0 && (
+    <section class="related">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-head__title">Nearby</h2>
+          <a class="section-head__link" href="/journal">All essays →</a>
+        </div>
+        <div class="post-grid">
+          {related.map((item) => <PostCard entry={item} compact />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="container">
+      <Newsletter />
+    </div>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+</BaseLayout>

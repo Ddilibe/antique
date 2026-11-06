@@ -1,0 +1,15 @@
+---
+import JournalArchive from '../../components/JournalArchive.astro';
+import { getPublishedJournal } from '../../lib/content';
+import { paginate } from '../../lib/utils';
+import { PAGINATION } from '../../consts';
+
+const entries = await getPublishedJournal();
+const result = paginate(entries, 1, PAGINATION.journal);
+---
+
+<JournalArchive
+  entries={result.items}
+  currentPage={result.currentPage}
+  totalPages={result.totalPages}
+/>

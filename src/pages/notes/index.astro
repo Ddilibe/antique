@@ -1,0 +1,69 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPublishedNotes } from '../../lib/content';
+import { formatDate, isoDate, slugify } from '../../lib/utils';
+
+const notes = await getPublishedNotes();
+const rendered = await Promise.all(
+  notes.map(async (note) => ({ note, ...(await render(note)) })),
+);
+---
+
+<BaseLayout
+  title="Notes"
+  description="Short entries, fragments, and marginalia from the desk at Antique."
+>
+  <header class="page-head">
+    <div class="container container--narrow">
+      <p class="eyebrow">Marginalia</p>
+      <h1 class="page-head__title">Notes</h1>
+      <p class="page-head__lede">
+        Shorter things: observations, quotations, half-formed thoughts kept because they would not
+        leave. The journal is for essays; this is for everything else.
+      </p>
+    </div>
+  </header>
+
+  <section class="section section--tight">
+    <div class="container container--narrow">
+      <div class="note-list" style="grid-template-columns: minmax(0, 1fr);">
+        {rendered.map(({ note, Content }) => (
+          <article class="note">
+            <div>
+              <time class="note__date" datetime={isoDate(note.data.date)}>
+                {formatDate(note.data.date)}
+              </time>
+              {note.data.tags.length > 0 && (
+                <div class="cluster" style="gap: 0.35rem; margin-top: 0.5rem;">
+                  {note.data.tags.map((tag) => (
+                    <a class="tag" href={`/tags/${slugify(tag)}/`}>{tag}</a>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div>
+              {note.data.title && (
+                <h2 class="note__title">
+                  <a href={`/notes/${note.id}/`}>{note.data.title}</a>
+                </h2>
+              )}
+              <div class="note__body"><Content /></div>
+              {note.data.source && (
+                <span class="note__source">
+                  {note.data.sourceHref ? (
+                    <a href={note.data.sourceHref} rel="noopener noreferrer" target="_blank">
+                      {note.data.source}
+                    </a>
+                  ) : (
+                    note.data.source
+                  )}
+                </span>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

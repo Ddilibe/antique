@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from './PostCard.astro';
+import Pagination from './Pagination.astro';
+import type { JournalEntry } from '../lib/content';
+
+interface Props {
+  entries: JournalEntry[];
+  currentPage: number;
+  totalPages: number;
+}
+
+const { entries, currentPage, totalPages } = Astro.props;
+---
+
+<BaseLayout
+  title={currentPage > 1 ? `Journal — page ${currentPage}` : 'Journal'}
+  description="Essays and long-form writing from Antique — on attention, memory, and the slow work of being alive."
+  noindex={currentPage > 1}
+>
+  <header class="page-head">
+    <div class="container container--narrow">
+      <p class="eyebrow">The journal</p>
+      <h1 class="page-head__title">Essays</h1>
+      <p class="page-head__lede">
+        Longer pieces, written and rewritten. Some begin as notes; most take their time becoming
+        anything at all.
+      </p>
+    </div>
+  </header>
+
+  <section class="section section--tight">
+    <div class="container">
+      <div class="post-grid">
+        {entries.map((entry) => <PostCard entry={entry} />)}
+      </div>
+
+      {totalPages > 1 && (
+        <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/journal" label="Journal pages" />
+      )}
+    </div>
+  </section>
+</BaseLayout>

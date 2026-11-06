@@ -1,0 +1,120 @@
+---
+import { NAV, SITE } from '../consts';
+
+const pathname = Astro.url.pathname;
+
+function isActive(href: string): boolean {
+  if (href === '/') return pathname === '/';
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+---
+
+<header class="site-header" data-site-header>
+  <div class="container site-header__inner">
+    <a class="brand" href="/" aria-label={`${SITE.name} — home`}>
+      <img class="brand__mark" src="/logo.svg" alt="" width="32" height="32" />
+      <span class="brand__name">Ant<span>i</span>que</span>
+    </a>
+
+    <nav class="site-nav" id="site-nav" aria-label="Primary" data-site-nav>
+      {NAV.map((item) => (
+        <a
+          class="site-nav__link"
+          href={item.href}
+          aria-current={isActive(item.href) ? 'page' : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="header-tools">
+      <a class="icon-button" href="/search" aria-label="Search the journal" title="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="11" cy="11" r="6.5"></circle>
+          <path d="m16 16 4.5 4.5" stroke-linecap="round"></path>
+        </svg>
+      </a>
+      <button class="icon-button theme-toggle" type="button" aria-label="Switch theme" title="Switch theme" data-theme-toggle>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" stroke-linejoin="round"></path>
+        </svg>
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8" stroke-linecap="round"></path>
+        </svg>
+      </button>
+      <button
+        class="icon-button nav-toggle"
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="site-nav"
+        data-nav-toggle
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  const nav = document.querySelector<HTMLElement>('[data-site-nav]');
+  const navToggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const themeToggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+
+  const setScrolled = () => {
+    if (!header) return;
+    header.dataset.scrolled = window.scrollY > 12 ? 'true' : 'false';
+  };
+
+  const setNav = (open: boolean) => {
+    if (!nav || !navToggle) return;
+    nav.dataset.open = open ? 'true' : 'false';
+    navToggle.setAttribute('aria-expanded', String(open));
+    navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  };
+
+  const syncThemeLabel = () => {
+    if (!themeToggle) return;
+    const dark = document.documentElement.dataset.theme === 'dark';
+    themeToggle.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+    themeToggle.setAttribute('title', dark ? 'Switch to light theme' : 'Switch to dark theme');
+  };
+
+  setScrolled();
+  syncThemeLabel();
+  window.addEventListener('scroll', setScrolled, { passive: true });
+
+  navToggle?.addEventListener('click', () => {
+    setNav(nav?.dataset.open !== 'true');
+  });
+
+  nav?.addEventListener('click', (event) => {
+    if ((event.target as Element).closest('a')) setNav(false);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') setNav(false);
+  });
+
+  const desktop = window.matchMedia('(min-width: 46.01rem)');
+  desktop.addEventListener('change', (event) => {
+    if (event.matches) setNav(false);
+  });
+
+  themeToggle?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('antique-theme', next);
+    } catch {
+      /* storage may be unavailable */
+    }
+    syncThemeLabel();
+  });
+</script>

@@ -1,0 +1,59 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  basePath: string;
+  label?: string;
+}
+
+const { currentPage, totalPages, basePath, label = 'Pagination' } = Astro.props;
+
+function href(page: number): string {
+  return page === 1 ? `${basePath}/` : `${basePath}/page/${page}/`;
+}
+
+const pages: (number | 'gap')[] = [];
+for (let page = 1; page <= totalPages; page += 1) {
+  if (page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1) {
+    pages.push(page);
+  } else if (pages[pages.length - 1] !== 'gap') {
+    pages.push('gap');
+  }
+}
+---
+
+<nav class="pagination" aria-label={label}>
+  <a
+    class="pagination__link"
+    href={currentPage > 1 ? href(currentPage - 1) : undefined}
+    aria-disabled={currentPage === 1 ? 'true' : undefined}
+    rel="prev"
+  >
+    ← Newer
+  </a>
+
+  <div class="pagination__pages">
+    {pages.map((page) =>
+      page === 'gap' ? (
+        <span class="pagination__ellipsis" aria-hidden="true">…</span>
+      ) : (
+        <a
+          class="pagination__link"
+          href={href(page)}
+          aria-current={page === currentPage ? 'page' : undefined}
+        >
+          {page}
+        </a>
+      ),
+    )}
+  </div>
+
+  <a
+    class="pagination__link"
+    href={currentPage < totalPages ? href(currentPage + 1) : undefined}
+    aria-disabled={currentPage === totalPages ? 'true' : undefined}
+    rel="next"
+  >
+    Older →
+  </a>
+</nav>

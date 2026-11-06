@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Not found" description="This page has gone quiet." noindex>
+  <section class="container">
+    <div class="not-found">
+      <p class="not-found__code" aria-hidden="true">404</p>
+      <p class="eyebrow">A dead end</p>
+      <h1 class="not-found__title">This page has gone quiet.</h1>
+      <p class="not-found__copy">
+        The address may have changed, or the piece may never have been written. Try the archive,
+        or begin again at the front door.
+      </p>
+      <div class="cluster">
+        <a class="button" href="/">Back to the beginning</a>
+        <a class="button button--ghost" href="/archive">Browse the archive</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

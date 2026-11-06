@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPublishedJournal, getPublishedNotes } from '../lib/content';
+import { formatDate, isoDate, sortByDateDesc, truncate } from '../lib/utils';
+
+const [journal, notes] = await Promise.all([getPublishedJournal(), getPublishedNotes()]);
+
+type ArchiveItem = {
+  id: string;
+  title: string;
+  date: Date;
+  href: string;
+  kind: 'Essay' | 'Note';
+};
+
+const items: ArchiveItem[] = [
+  ...journal.map((entry) => ({
+    id: entry.id,
+    title: entry.data.title,
+    date: entry.data.date,
+    href: `/journal/${entry.id}/`,
+    kind: 'Essay' as const,
+  })),
+  ...notes.map((entry) => ({
+    id: entry.id,
+    title:
+      entry.data.title ??
+      truncate((entry.body ?? 'Untitled note').replace(/\s+/g, ' ').trim(), 72),
+    date: entry.data.date,
+    href: `/notes/${entry.id}/`,
+    kind: 'Note' as const,
+  })),
+];
+
+const sorted = sortByDateDesc(items);
+const years = [...new Set(sorted.map((item) => item.date.getUTCFullYear()))];
+---
+
+<BaseLayout
+  title="Archive"
+  description="Every essay and note published in Antique, arranged by year."
+>
+  <header class="page-head">
+    <div class="container container--narrow">
+      <p class="eyebrow">Everything, in order</p>
+      <h1 class="page-head__title">Archive</h1>
+      <p class="page-head__lede">
+        The complete record — {journal.length} essays and {notes.length} notes, from the most recent
+        backwards.
+      </p>
+    </div>
+  </header>
+
+  <section class="section section--tight">
+    <div class="container container--narrow">
+      {years.map((year) => (
+        <div class="archive-year">
+          <h2 class="archive-year__title">{year}</h2>
+          <div class="archive-list">
+            {sorted
+              .filter((item) => item.date.getUTCFullYear() === year)
+              .map((item) => (
+                <div class="archive-item">
+                  <time class="archive-item__date" datetime={isoDate(item.date)}>
+                    {formatDate(item.date, 'month-day')}
+                  </time>
+                  <h3 class="archive-item__title">
+                    <a href={item.href}>{item.title}</a>
+                  </h3>
+                  <span class="archive-item__kind">{item.kind}</span>
+                </div>
+              ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

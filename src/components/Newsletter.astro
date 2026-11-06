@@ -1,0 +1,68 @@
+---
+import { SITE } from '../consts';
+
+interface Props {
+  title?: string;
+  copy?: string;
+}
+
+const {
+  title = 'A letter, now and then.',
+  copy = 'Occasional dispatches from the desk: new essays, fragments too small for the journal, and notes on what is being read. No noise, no schedule.',
+} = Astro.props;
+---
+
+<section class="newsletter" data-pagefind-ignore aria-labelledby="newsletter-title">
+  <div class="newsletter__grid">
+    <div>
+      <p class="eyebrow">The post</p>
+      <h2 class="newsletter__title" id="newsletter-title">{title}</h2>
+      <p class="newsletter__copy">{copy}</p>
+    </div>
+
+    <form class="newsletter__form" data-newsletter novalidate>
+      <div class="field">
+        <label for="newsletter-email">Email address</label>
+        <input
+          id="newsletter-email"
+          name="email"
+          type="email"
+          inputmode="email"
+          autocomplete="email"
+          placeholder="you@somewhere.quiet"
+          required
+        />
+      </div>
+      <button class="button" type="submit">Subscribe</button>
+      <p class="newsletter__note" data-newsletter-note>
+        Sent rarely. Unsubscribe with a single click. Or write to {SITE.email}.
+      </p>
+    </form>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-newsletter]');
+  if (form) {
+    const input = form.querySelector<HTMLInputElement>('input[type="email"]');
+    const note = form.querySelector<HTMLElement>('[data-newsletter-note]');
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const value = input?.value.trim() ?? '';
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+      if (!note) return;
+
+      if (!valid) {
+        note.textContent = 'That address does not look quite right. Try again?';
+        input?.focus();
+        return;
+      }
+
+      note.textContent = `Thank you — ${value} is on the list. A letter will find you when there is something worth saying.`;
+      note.classList.add('newsletter__success');
+      form.reset();
+    });
+  }
+</script>

@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Search"
+  description="Search every essay and note in the Antique archive."
+  noindex
+>
+  <header class="page-head">
+    <div class="container container--narrow">
+      <p class="eyebrow">Find something</p>
+      <h1 class="page-head__title">Search</h1>
+      <p class="page-head__lede">
+        Look through the whole archive — essays, notes, and the occasional half-finished thought.
+      </p>
+    </div>
+  </header>
+
+  <section class="section section--tight" data-pagefind-ignore>
+    <div class="container container--narrow">
+      <div class="search-panel" id="search"></div>
+      <div class="search-fallback" data-search-fallback hidden>
+        <p>
+          The search index is generated when the site is built with Pagefind. Run a production
+          build (<code>pnpm build</code>) and preview it to search the archive. In the meantime, try
+          the <a href="/archive">archive</a> or <a href="/tags">tags</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline>
+  (() => {
+    const mount = document.getElementById('search');
+    const fallback = document.querySelector('[data-search-fallback]');
+    if (!mount) return;
+
+    const showFallback = () => {
+      mount.hidden = true;
+      if (fallback) fallback.hidden = false;
+    };
+
+    const probe = fetch('/pagefind/pagefind-ui.js', { method: 'GET' });
+    probe
+      .then((response) => {
+        if (!response.ok) throw new Error('Pagefind index unavailable');
+
+        const styles = document.createElement('link');
+        styles.rel = 'stylesheet';
+        styles.href = '/pagefind/pagefind-ui.css';
+        document.head.appendChild(styles);
+
+        const script = document.createElement('script');
+        script.src = '/pagefind/pagefind-ui.js';
+        script.onload = () => {
+          if (!window.PagefindUI) {
+            showFallback();
+            return;
+          }
+          new window.PagefindUI({
+            element: '#search',
+            showSubResults: true,
+            showImages: false,
+            resetStyles: false,
+            translations: {
+              placeholder: 'Search essays and notes…',
+              zero_results: 'No results for [SEARCH_TERM] — try another word.',
+            },
+          });
+        };
+        script.onerror = showFallback;
+        document.head.appendChild(script);
+      })
+      .catch(showFallback);
+  })();
+</script>
