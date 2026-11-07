@@ -36,7 +36,7 @@ const { title, date, tags, source, sourceHref } = note.data;
 >
   <article class="container" data-pagefind-body>
     <div class="note-page">
-      <a class="post-header__back" href="/notes" data-pagefind-ignore>← All notes</a>
+      <a class="post-header__back" href="/notes" data-pagefind-ignore>← All notes |<span></span></a>
       <time class="note-page__date" datetime={isoDate(date)}>{formatDate(date)}</time>
 
       {title && <h1 class="post-header__title" style="font-size: var(--step-3);">{title}</h1>}
