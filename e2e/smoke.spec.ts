@@ -63,6 +63,22 @@ test.describe('Antique', () => {
     await expect(root).toHaveAttribute('data-theme', after ?? 'light');
   });
 
+  test('social preview points at the logo image', async ({ page, request }) => {
+    await page.goto('/');
+
+    const ogImage = await page.locator('meta[property="og:image"]').getAttribute('content');
+    expect(ogImage).toMatch(/\/og\/logo\.png$/);
+
+    const twitterImage = await page
+      .locator('meta[name="twitter:image"]')
+      .getAttribute('content');
+    expect(twitterImage).toBe(ogImage);
+
+    const image = await request.get('/og/logo.png');
+    expect(image.status()).toBe(200);
+    expect(image.headers()['content-type']).toContain('image/png');
+  });
+
   test('the RSS feed is valid XML', async ({ request }) => {
     const response = await request.get('/rss.xml');
     expect(response.status()).toBe(200);
