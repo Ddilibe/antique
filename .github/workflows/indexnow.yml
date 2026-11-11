@@ -1,0 +1,22 @@
+name: IndexNow
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Wait for the Netlify deployment
+        run: sleep 120
+
+      - name: Submit sitemap URLs to IndexNow
+        run: node scripts/indexnow.mjs

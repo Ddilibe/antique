@@ -27,7 +27,7 @@ export async function GET(context: APIContext) {
   return rss({
     title: SITE.title,
     description: SITE.description,
-    site: context.site ?? 'https://antique.example',
+    site: context.site ?? SITE.url,
     items,
     customData: `<language>en-us</language><copyright>© ${new Date().getFullYear()} ${SITE.name}</copyright>`,
   });

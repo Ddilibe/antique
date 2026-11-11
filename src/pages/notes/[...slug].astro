@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getPublishedNotes, type NoteEntry } from '../../lib/content';
 import { formatDate, isoDate, slugify } from '../../lib/utils';
+import { SITE } from '../../consts';
 
 export async function getStaticPaths() {
   const notes = await getPublishedNotes();
@@ -26,13 +27,28 @@ interface Props {
 const { note, newer, older } = Astro.props;
 const { Content } = await render(note);
 const { title, date, tags, source, sourceHref } = note.data;
+
+const noteTitle = title ?? `Note — ${formatDate(date)}`;
+const origin = Astro.site ?? new URL(SITE.url);
+const canonical = new URL(Astro.url.pathname, origin);
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin.origin}/` },
+    { '@type': 'ListItem', position: 2, name: 'Notes', item: `${origin.origin}/notes/` },
+    { '@type': 'ListItem', position: 3, name: noteTitle, item: canonical.href },
+  ],
+};
 ---
 
 <BaseLayout
-  title={title ?? `Note — ${formatDate(date)}`}
+  title={noteTitle}
   description={note.body ? note.body.slice(0, 160) : 'A note from Antique.'}
   type="article"
   publishedTime={date.toISOString()}
+  articleTags={tags}
 >
   <article class="container" data-pagefind-body>
     <div class="note-page">
@@ -77,4 +93,5 @@ const { title, date, tags, source, sourceHref } = note.data;
       </nav>
     </div>
   </article>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
 </BaseLayout>

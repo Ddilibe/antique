@@ -69,6 +69,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
               zero_results: 'No results for [SEARCH_TERM] — try another word.',
             },
           });
+
+          const query = new URLSearchParams(window.location.search).get('q');
+          if (query) {
+            const input = mount.querySelector('input');
+            if (input) {
+              input.value = query;
+              input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+          }
         };
         script.onerror = showFallback;
         document.head.appendChild(script);

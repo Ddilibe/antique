@@ -1,6 +1,7 @@
 
 export const SITE = {
   name: 'Antique',
+  url: 'https://antique.keyboardwarrior.top',
   title: 'Antique ... a quiet place for loud thoughts',
   description:
     'A personal journal and independent publication. Essays, fragments, and field notes on attention, memory, and the slow work of being alive.',
