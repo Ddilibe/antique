@@ -9,6 +9,8 @@ epigraph: "A safe computer is a switched-off computer. And yet..."
 epigraphAuthor: "Bill Gates"
 ---
 
+![padlock with gate](/images/photo-1654337436913-ddb773b3a61b.jpg)
+
 
 With the advancement of AI, hacking will increasingly shift away from the traditional emphasis on discovering software vulnerabilities and bugs towards exploiting the interactions between software systems, the sequences of operations they perform, and the assumptions built into their workflows. As applications become more sophisticated, interconnected, and increasingly dependent on APIs, third-party services, and autonomous agents, vulnerabilities will not necessarily exist within individual components but may emerge from how those components communicate and depend on one another. A system can have well-written code, strong encryption, and properly implemented authentication, yet still be vulnerable because of how legitimate operations are sequenced or how different components interpret and trust one another.
 

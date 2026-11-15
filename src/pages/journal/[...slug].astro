@@ -28,7 +28,18 @@ interface Props {
 
 const { entry, entries } = Astro.props;
 const { Content, headings } = await render(entry);
-const { title, description, date, updated, tags, issue, epigraph, epigraphAuthor } = entry.data;
+const {
+  title,
+  description,
+  date,
+  updated,
+  tags,
+  issue,
+  epigraph,
+  epigraphAuthor,
+  cover,
+  coverAlt,
+} = entry.data;
 
 const minutes = entryReadingTime(entry);
 const words = wordCount(entry.body);
@@ -90,6 +101,11 @@ const jsonLd = {
         </div>
         <h1 class="post-header__title">{title}</h1>
         <p class="post-header__description">{description}</p>
+        {cover && (
+          <figure class="post-header__cover">
+            <img src={cover} alt={coverAlt ?? ''} loading="eager" />
+          </figure>
+        )}
         {updated && (
           <p class="meta" style="margin-top: 1rem;">
             Revised <time datetime={isoDate(updated)}>{formatDate(updated)}</time>
