@@ -17,6 +17,8 @@ const journal = defineCollection({
     epigraphAuthor: z.string().optional(),
     cover: z.string().optional(),
     coverAlt: z.string().optional(),
+    coverWidth: z.number().int().positive().optional(),
+    coverHeight: z.number().int().positive().optional(),
   }),
 });
 
@@ -24,6 +26,7 @@ const notes = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/notes' }),
   schema: z.object({
     title: z.string().optional(),
+    description: z.string().optional(),
     date: z.coerce.date(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),

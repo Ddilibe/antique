@@ -39,6 +39,8 @@ const {
   epigraphAuthor,
   cover,
   coverAlt,
+  coverWidth,
+  coverHeight,
 } = entry.data;
 
 const minutes = entryReadingTime(entry);
@@ -46,6 +48,14 @@ const words = wordCount(entry.body);
 const related = getRelatedJournal(entry, entries);
 const origin = Astro.site ?? new URL(SITE.url);
 const canonical = new URL(Astro.url.pathname, origin);
+const coverExtension = cover?.match(/\.(jpe?g|png|webp)$/i)?.[1]?.toLowerCase();
+const coverType =
+  coverExtension === 'jpg' || coverExtension === 'jpeg'
+    ? 'image/jpeg'
+    : coverExtension
+      ? `image/${coverExtension}`
+      : undefined;
+const coverImage = cover ? new URL(cover, origin).href : new URL('/og/logo.png', origin).href;
 
 const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
@@ -62,17 +72,27 @@ const jsonLd = {
   '@type': 'Article',
   headline: title,
   description,
+  image: coverImage,
+  keywords: tags.join(', '),
+  wordCount: words,
+  articleSection: tags,
+  inLanguage: SITE.locale,
   datePublished: date.toISOString(),
   ...(updated && { dateModified: updated.toISOString() }),
   author: {
     '@type': 'Person',
     name: SITE.author.name,
+    url: `${origin.origin}/about/`,
   },
   publisher: {
     '@type': 'Organization',
     name: SITE.name,
+    url: origin.origin,
   },
-  mainEntityOfPage: canonical.href,
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': canonical.href,
+  },
   url: canonical.href,
 };
 ---
@@ -80,6 +100,11 @@ const jsonLd = {
 <BaseLayout
   title={title}
   description={description}
+  image={cover}
+  imageAlt={cover ? (coverAlt ?? title) : undefined}
+  imageType={coverType}
+  imageWidth={coverWidth}
+  imageHeight={coverHeight}
   type="article"
   publishedTime={date.toISOString()}
   modifiedTime={updated?.toISOString()}

@@ -2,7 +2,7 @@
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getPublishedNotes, type NoteEntry } from '../../lib/content';
-import { formatDate, isoDate, slugify } from '../../lib/utils';
+import { formatDate, isoDate, slugify, truncate } from '../../lib/utils';
 import { SITE } from '../../consts';
 
 export async function getStaticPaths() {
@@ -26,11 +26,41 @@ interface Props {
 
 const { note, newer, older } = Astro.props;
 const { Content } = await render(note);
-const { title, date, tags, source, sourceHref } = note.data;
+const { title, description, date, tags, source, sourceHref } = note.data;
 
 const noteTitle = title ?? `Note — ${formatDate(date)}`;
+const noteDescription =
+  description ||
+  (note.body
+    ? truncate(note.body.replace(/[#*_>`\[\]]/g, '').replace(/\s+/g, ' ').trim(), 160)
+    : '') ||
+  'A note from Antique.';
 const origin = Astro.site ?? new URL(SITE.url);
 const canonical = new URL(Astro.url.pathname, origin);
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: noteTitle,
+  description: noteDescription,
+  inLanguage: SITE.locale,
+  datePublished: date.toISOString(),
+  author: {
+    '@type': 'Person',
+    name: SITE.author.name,
+    url: `${origin.origin}/about/`,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: SITE.name,
+    url: origin.origin,
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': canonical.href,
+  },
+  url: canonical.href,
+};
 
 const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
@@ -45,7 +75,7 @@ const breadcrumbJsonLd = {
 
 <BaseLayout
   title={noteTitle}
-  description={note.body ? note.body.slice(0, 160) : 'A note from Antique.'}
+  description={noteDescription}
   type="article"
   publishedTime={date.toISOString()}
   articleTags={tags}
@@ -55,7 +85,7 @@ const breadcrumbJsonLd = {
       <a class="post-header__back" href="/notes" data-pagefind-ignore>← All notes |<span></span></a>
       <time class="note-page__date" datetime={isoDate(date)}>{formatDate(date)}</time>
 
-      {title && <h1 class="post-header__title" style="font-size: var(--step-3);">{title}</h1>}
+      <h1 class="post-header__title" style="font-size: var(--step-3);">{noteTitle}</h1>
 
       <div class="prose note-page__body">
         <Content />
@@ -93,5 +123,6 @@ const breadcrumbJsonLd = {
       </nav>
     </div>
   </article>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
 </BaseLayout>
