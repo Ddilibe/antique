@@ -1,5 +1,5 @@
 ---
-title: 'Brutus: What I Learned from Investigating a Linux Brute-Force Attack'
+title: 'What I Learned from Investigating a Linux Brute-Force Attack'
 description: 'What a Hack The Box investigation taught me about authentication logs, binary data, and persistence on compromised systems.'
 date: 2026-11-17
 tags: ['cyber security', 'forensics', 'python', 'learning']
