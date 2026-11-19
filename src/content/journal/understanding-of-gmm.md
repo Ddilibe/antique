@@ -148,7 +148,7 @@ I might want to understand whether people with higher incomes generally have hig
 
 The sample covariance formula is:
 
-$$ \operatorname{Cov}(X,Y)= \frac{1}{N-1} \sum\_{i=1}^{N}(x_i-\bar{x})(y_i-\bar{y}) $$
+$$ \operatorname{Cov}(X,Y)= \frac{1}{N-1} \sum_{i=1}^{N}(x_i-\bar{x})(y_i-\bar{y}) $$
 
 Where:
 
@@ -249,7 +249,7 @@ Now that I understand Gaussian distributions, I can understand how GMM combines 
 
 The overall mixture density is:
 
-$$ p(x)=\sum\_{k=1}^{K} \pi_k\mathcal{N}(x|\mu_k,\Sigma_k) $$
+$$ p(x)=\sum_{k=1}^{K} \pi_k\mathcal{N}(x|\mu_k,\Sigma_k) $$
 
 Where:
 
@@ -268,7 +268,7 @@ Mixture weights determine the relative contribution of each Gaussian component t
 
 The weights must satisfy:
 
-$$ \sum\_{k=1}^{K}\pi_k=1 $$
+$$ \sum_{k=1}^{K}\pi_k=1 $$
 
 And:
 
@@ -300,7 +300,7 @@ The E-step calculates the responsibilities of each Gaussian component for every 
 
 The formula is:
 
-$$ r\_{ik}= \frac{ \pi_k\mathcal{N}(x_i|\mu_k,\Sigma_k) }{ \sum\_{j=1}^{K} \pi_j\mathcal{N}(x_i|\mu_j,\Sigma_j) } $$
+$$ r\_{ik}= \frac{ \pi_k\mathcal{N}(x_i|\mu_k,\Sigma_k) }{ \sum_{j=1}^{K} \pi_j\mathcal{N}(x_i|\mu_j,\Sigma_j) } $$
 
 Where:
 
@@ -345,7 +345,7 @@ There are three major updates.
 
 **A. Calculate effective component counts**
 
-$$ N_k=\sum\_{i=1}^{N}r\_{ik} $$
+$$ N_k=\sum_{i=1}^{N}r\_{ik} $$
 
 Where:
 
@@ -399,7 +399,7 @@ This tells me the relative contribution of each Gaussian component to the datase
 
 The responsibility-weighted mean formula is:
 
-$$ \mu_k= \frac{1}{N_k} \sum\_{i=1}^{N}r\_{ik}x_i $$
+$$ \mu_k= \frac{1}{N_k} \sum_{i=1}^{N}r\_{ik}x_i $$
 
 Where:
 
@@ -422,7 +422,7 @@ We use the ordinary mean for a simple unweighted average, but we use this weight
 
 The covariance update formula is:
 
-$$ \Sigma_k= \frac{1}{N_k} \sum\_{i=1}^{N} r\_{ik}(x_i-\mu_k)(x_i-\mu_k)^T $$
+$$ \Sigma_k= \frac{1}{N_k} \sum_{i=1}^{N} r\_{ik}(x_i-\mu_k)(x_i-\mu_k)^T $$
 
 Where:
 
@@ -437,7 +437,7 @@ This formula calculates the responsibility-weighted spread of observations aroun
 
 For one-dimensional data, the covariance update reduces to the responsibility-weighted variance:
 
-$$ \sigma_k^2= \frac{1}{N_k} \sum\_{i=1}^{N}r\_{ik}(x_i-\mu_k)^2 $$
+$$ \sigma_k^2= \frac{1}{N_k} \sum_{i=1}^{N}r\_{ik}(x_i-\mu_k)^2 $$
 
 **When is each formula used?**
 
@@ -492,7 +492,7 @@ One way to monitor the model's progress is by calculating log-likelihood.
 
 The formula is:
 
-$$ \mathcal{L}= \sum\_{i=1}^{N} \log\left( \sum\_{k=1}^{K} \pi_k\mathcal{N}(x_i|\mu_k,\Sigma_k) \right) $$
+$$ \mathcal{L}= \sum_{i=1}^{N} \log\left( \sum_{k=1}^{K} \pi_k\mathcal{N}(x_i|\mu_k,\Sigma_k) \right) $$
 
 Where:
 
@@ -534,7 +534,7 @@ Another thing I learned is that GMM can provide two different kinds of outputs d
 
 The posterior probability formula is:
 
-$$ P(k|x)= \frac{ \pi_k\mathcal{N}(x|\mu_k,\Sigma_k) }{ \sum\_{j=1}^{K} \pi_j\mathcal{N}(x|\mu_j,\Sigma_j) } $$
+$$ P(k|x)= \frac{ \pi_k\mathcal{N}(x|\mu_k,\Sigma_k) }{ \sum_{j=1}^{K} \pi_j\mathcal{N}(x|\mu_j,\Sigma_j) } $$
 
 This is the same mathematical formula used to calculate responsibilities during the E-step.
 
