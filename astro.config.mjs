@@ -2,6 +2,9 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+
 
 const site = process.env.SITE_URL ?? 'https://antique.keyboardwarrior.top';
 
@@ -52,6 +55,8 @@ export default defineConfig({
       theme: 'rose-pine-moon',
       wrap: true,
     },
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeKatex],
   },
   prefetch: {
     prefetchAll: true,
