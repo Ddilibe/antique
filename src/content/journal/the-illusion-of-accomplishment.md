@@ -1,5 +1,5 @@
 ---
-title: 'The Illusion of Accomplishment: When an Overactive Imagination Becomes a Hindrance'
+title: 'When an Overactive Imagination Becomes a Hindrance'
 description: 'When imagining a finished task becomes so rewarding that it quietly replaces the work of actually doing it.'
 date: 2026-11-14
 tags: ['imagination', 'habits', 'productivity', 'introversion']
